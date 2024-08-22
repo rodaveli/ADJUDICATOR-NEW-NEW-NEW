@@ -9,6 +9,10 @@ class Session(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     description = Column(Text)
+    user1_id = Column(String)  # Add this line
+    user2_id = Column(String)
+    user1_name = Column(String, default="")
+    user2_name = Column(String, default="")
 
     arguments = relationship("Argument", back_populates="session")
     judgement = relationship("Judgement", back_populates="session", uselist=False)
@@ -34,6 +38,7 @@ class Argument(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     content = Column(Text)
+    user_id = Column(String)
     image_url = Column(String)
     session_id = Column(Integer, ForeignKey("sessions.id"))
 
