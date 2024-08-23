@@ -292,7 +292,7 @@
         {#if $session?.arguments && $session.arguments.length > 0}
             {#each $session.arguments as argument}
                 <div class="argument">
-                    <h3>Argument {argument.id} by {argument.username}</h3>
+                    <h3>Argument by {argument.username}</h3>
                     <p>{argument.content}</p>
                     {#if argument.image_url}
                         <img src={argument.image_url} alt="Argument image" />
