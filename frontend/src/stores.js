@@ -141,11 +141,7 @@ export async function getJudgement(sessionId) {
       if (s && s.id === sessionId) {
         return {
           ...s,
-          judgement: {
-            ...judgement,
-            winning_user_id: judgement.winning_user_id,
-            losing_user_id: judgement.losing_user_id,
-          },
+          judgement: judgement,
         };
       }
       return s;

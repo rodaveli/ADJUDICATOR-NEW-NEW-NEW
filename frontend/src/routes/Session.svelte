@@ -102,12 +102,6 @@
         newUsername = $session[`${currentUser}_name`];
     }
 
-    function getUsernameByArgument(argumentNumber) {
-        return argumentNumber === "Argument 1"
-            ? $session.user1_name
-            : $session.user2_name;
-    }
-
     async function saveUsername() {
         try {
             const updatedSession = await updateUsername(
@@ -151,7 +145,9 @@
         event.preventDefault();
         try {
             await submitAppeal(id, appealContent);
-            addMessage(`${currentUser} submitted an appeal`);
+            addMessage(
+                `${$session[`${currentUser}_name`]} submitted an appeal`,
+            );
             appealContent = "";
         } catch (error) {
             alert("Failed to submit appeal. Please try again.");
@@ -169,12 +165,13 @@
         }
     }
 
-    function getArgumentAuthor(index) {
-        return index === 0 ? "User 1" : "User 2";
-    }
-
     function addMessage(content) {
         messages = [...messages, { content, timestamp: new Date() }];
+        // Scroll to the bottom of the chat box
+        const chatBox = document.querySelector(".chat-box");
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
     }
 
     $: canSubmitArgument = $session?.arguments && $session.arguments.length < 2;
@@ -184,23 +181,8 @@
         !$session?.judgement;
     $: canAppeal =
         $session?.judgement &&
-        getUsernameByArgument(
-            currentUser === "user1" ? "Argument 1" : "Argument 2",
-        ) === $session.judgement.loser &&
+        $session.judgement.loser === $session[`${currentUser}_name`] && // Use username directly
         !$session.appeal_judgement;
-
-    $: if ($session?.judgement) {
-        console.log("Session judgement updated:", $session.judgement);
-        addMessage(
-            `Judgement: ${getUsernameByArgument($session.judgement.winner)} wins! Reason: ${$session.judgement.reasoning}`,
-        );
-    }
-
-    $: if ($session?.appeal_judgement) {
-        addMessage(
-            `Appeal Judgement: ${getUsernameByArgument($session.appeal_judgement.winner)} wins! Reason: ${$session.appeal_judgement.reasoning}`,
-        );
-    }
 </script>
 
 <main>
@@ -248,7 +230,7 @@
             </div>
         </section>
 
-        {#if $session.judgement.loser === getUsernameByArgument(currentUser === "user1" ? "Argument 1" : "Argument 2") && !$session.appeal_judgement}
+        {#if canAppeal}
             <section>
                 <h2>Submit Appeal</h2>
                 <form on:submit|preventDefault={handleSubmitAppeal}>
@@ -265,7 +247,7 @@
             <div class="appeal-judgement">
                 <p>
                     <strong>Winner:</strong>
-                    {getUsernameByArgument($session.appeal_judgement.winner)}
+                    {$session.appeal_judgement.winner}
                 </p>
                 <p>
                     <strong>Winning Argument:</strong>
@@ -273,7 +255,7 @@
                 </p>
                 <p>
                     <strong>Loser:</strong>
-                    {getUsernameByArgument($session.appeal_judgement.loser)}
+                    {$session.appeal_judgement.loser}
                 </p>
                 <p>
                     <strong>Losing Argument:</strong>
@@ -308,9 +290,9 @@
     <section>
         <h2>Arguments</h2>
         {#if $session?.arguments && $session.arguments.length > 0}
-            {#each $session.arguments as argument, index}
+            {#each $session.arguments as argument}
                 <div class="argument">
-                    <h3>Argument {index + 1} by {getArgumentAuthor(index)}</h3>
+                    <h3>Argument {argument.id} by {argument.username}</h3>
                     <p>{argument.content}</p>
                     {#if argument.image_url}
                         <img src={argument.image_url} alt="Argument image" />
@@ -350,20 +332,6 @@
                 Both arguments have been submitted. The AI judge is now
                 evaluating them.
             </p>
-        </section>
-    {/if}
-
-    {#if canAppeal}
-        <section>
-            <h2>Submit Appeal</h2>
-            <form on:submit={handleSubmitAppeal}>
-                <div>
-                    <label for="appeal">Your Appeal:</label>
-                    <textarea id="appeal" bind:value={appealContent} required
-                    ></textarea>
-                </div>
-                <button type="submit">Submit Appeal</button>
-            </form>
         </section>
     {/if}
 </main>
