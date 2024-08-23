@@ -6,6 +6,7 @@ from typing import List, Dict
 import logging
 from starlette.websockets import WebSocketDisconnect
 import json
+import traceback
 import crud, models, schemas
 from database import SessionLocal, engine
 from ai_judge import get_ai_judgement, Judgement
@@ -110,16 +111,17 @@ async def create_argument(
     session_id: int,
     content: str = Form(...),
     userId: str = Form(...),
+    username: str = Form(...),  # Add this line
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
-    logger.info(f"Received argument submission for session {session_id}: content={content}, image={image}, userId={userId}")
     try:
         argument = await crud.create_argument(
             db=db,
             argument=schemas.ArgumentCreate(content=content),
             session_id=session_id,
             user_id=userId,
+            username=username,  # Add this line
             image=image
         )
         logger.info(f"Created argument: {argument}")
@@ -189,10 +191,28 @@ async def judge_session(session_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Not enough arguments to judge")
 
     try:
-        schema_arguments = [schemas.Argument.from_orm(arg) for arg in arguments]
-        judgement_data = get_ai_judgement(schema_arguments)
+        # Sort arguments based on user ID to ensure consistent order
+        arguments.sort(key=lambda arg: arg.user_id)
 
-        logger.info(f"AI Judgement for session {session_id}: {judgement_data}")
+        #schema_arguments = [schemas.Argument.from_orm(arg) for arg in arguments]
+        #judgement_data = get_ai_judgement(schema_arguments)
+        judgement_data = get_ai_judgement(arguments)
+
+        # Get usernames based on user IDs from judgement_data
+        winning_user_id = judgement_data.get('winning_user_id')
+        losing_user_id = judgement_data.get('losing_user_id')
+
+        # Find the arguments with matching user IDs
+        winning_argument = next((arg for arg in arguments if arg.user_id == winning_user_id), None)
+        losing_argument = next((arg for arg in arguments if arg.user_id == losing_user_id), None)
+
+        # Extract usernames if arguments are found
+        winning_username = winning_argument.username if winning_argument else "Unknown"
+        losing_username = losing_argument.username if losing_argument else "Unknown"
+
+        # Update the winner and loser fields with usernames
+        judgement_data['winner'] = winning_username
+        judgement_data['loser'] = losing_username
 
         judgement_create = schemas.JudgementCreate(**judgement_data)
         db_judgement = crud.create_judgement(db=db, judgement=judgement_create, session_id=session_id)
@@ -211,6 +231,7 @@ async def judge_session(session_id: int, db: Session = Depends(get_db)):
         return db_judgement
     except Exception as e:
         logger.error(f"Error in judge_session: {str(e)}")
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/sessions/{session_id}/appeal/", response_model=schemas.Appeal)

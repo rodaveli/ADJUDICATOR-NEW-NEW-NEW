@@ -1,0 +1,47 @@
+ADJUDICATOR NEW NEW NEW
+├── __pycache__
+├── backend
+│   ├── __pycache__
+│   └── venv
+├── frontend
+│   ├── node_modules
+│   └── public
+│       ├── build
+│       ├── favicon.png
+│       ├── global.css
+│       ├── index.html
+│       └── scripts
+│           └── setupTypeScript.js
+│   └── src
+│       ├── routes
+│       │   ├── Home.svelte
+│       │   ├── Session.svelte
+│       │   └── SessionOld.svelte
+│       ├── App.svelte
+│       ├── main.js
+│       └── stores.js
+│   ├── .gitignore
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── README.md
+│   ├── rollup.config.js
+│   └── tailwind.config.js
+└── venv
+    ├── bin
+    ├── include
+    ├── lib
+    └── pyvenv.cfg
+├── __init__.py
+├── .gitignore
+├── ai_judge.py
+├── crud.py
+├── database.py
+├── main.py
+├── models.py
+├── README.MD
+├── reqs_old.txt
+├── requirements.txt
+├── schemas.py
+├── sql_app.db
+└── vercel.json

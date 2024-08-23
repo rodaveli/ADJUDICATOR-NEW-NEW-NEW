@@ -23,6 +23,7 @@ class Argument(ArgumentCreate):
     user_id: str
     session_id: int
     image_url: Optional[str] = None
+    username: str
 
     class Config:
         from_attributes = True
@@ -31,8 +32,10 @@ class JudgementBase(BaseModel):
     content: str
     winner: str
     winning_argument: str
+    winning_user_id: str
     loser: str
     losing_argument: str
+    losing_user_id: str
     reasoning: str
 
 class JudgementCreate(JudgementBase):

@@ -43,8 +43,8 @@ def update_session_username(db: Session, session_id: int, user: str, username: s
     db.refresh(session)
     return session
 
-async def create_argument(db: Session, argument: schemas.ArgumentCreate, session_id: int, user_id: str, image: UploadFile = None):
-    db_argument = models.Argument(content=argument.content, session_id=session_id, user_id=user_id)
+async def create_argument(db: Session, argument: schemas.ArgumentCreate, session_id: int, user_id: str, username: str, image: UploadFile = None):
+    db_argument = models.Argument(content=argument.content, session_id=session_id, user_id=user_id, username=username)
     image_url = None
     if image:
         file_extension = os.path.splitext(image.filename)[1]

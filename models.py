@@ -39,6 +39,7 @@ class Argument(Base):
     id = Column(Integer, primary_key=True, index=True)
     content = Column(Text)
     user_id = Column(String)
+    username = Column(String)  # Add this line
     image_url = Column(String)
     session_id = Column(Integer, ForeignKey("sessions.id"))
 
@@ -51,12 +52,30 @@ class Judgement(Base):
     content = Column(Text)
     winner = Column(String)
     winning_argument = Column(Text)
+    winning_user_id = Column(String)  # Add this line
     loser = Column(String)
     losing_argument = Column(Text)
+    losing_user_id = Column(String)  # Add this line
     reasoning = Column(Text)
     session_id = Column(Integer, ForeignKey("sessions.id"))
 
     session = relationship("Session", back_populates="judgement")
+
+# class Judgement(Base):
+#     __tablename__ = "judgements"
+
+#     id = Column(Integer, primary_key=True, index=True)
+#     content = Column(Text)
+#     winner = Column(String)
+#     winning_argument = Column(Text)
+#     winning_username = Column(String)  # Add this line
+#     loser = Column(String)
+#     losing_argument = Column(Text)
+#     losing_username = Column(String)  # Add this line
+#     reasoning = Column(Text)
+#     session_id = Column(Integer, ForeignKey("sessions.id"))
+
+#     session = relationship("Session", back_populates="judgement")
 
 
 class Appeal(Base):

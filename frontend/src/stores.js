@@ -3,6 +3,15 @@ import { writable } from "svelte/store";
 export const session = writable(null);
 export const API_URL = "http://localhost:8000";
 
+function getUserId() {
+  let userId = localStorage.getItem("userId");
+  if (!userId) {
+    userId = "user_" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem("userId", userId);
+  }
+  return userId;
+}
+
 export async function createSession(name, description) {
   const userId = getUserId();
   try {
@@ -41,15 +50,6 @@ export async function getSession(id) {
   }
 }
 
-function getUserId() {
-  let userId = localStorage.getItem("userId");
-  if (!userId) {
-    userId = "user_" + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem("userId", userId);
-  }
-  return userId;
-}
-
 export async function inviteUser(sessionId, email) {
   const userId = getUserId();
   try {
@@ -73,16 +73,19 @@ export async function inviteUser(sessionId, email) {
 
 export async function submitArgument(sessionId, content, imageFile) {
   const userId = getUserId();
+  const username = localStorage.getItem("username") || "Anonymous";
   console.log("Submitting argument:", {
     sessionId,
     content,
     imageFile,
     userId,
+    username,
   });
   try {
     const formData = new FormData();
     formData.append("content", content);
     formData.append("userId", userId);
+    formData.append("username", username);
     if (imageFile) {
       formData.append("image", imageFile);
     }
@@ -133,14 +136,21 @@ export async function getJudgement(sessionId) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const judgement = await response.json();
     session.update((s) => {
       if (s && s.id === sessionId) {
-        s.judgement = data;
+        return {
+          ...s,
+          judgement: {
+            ...judgement,
+            winning_user_id: judgement.winning_user_id,
+            losing_user_id: judgement.losing_user_id,
+          },
+        };
       }
       return s;
     });
-    return data;
+    return judgement;
   } catch (error) {
     console.error("Error getting judgement:", error);
     throw error;
@@ -164,6 +174,7 @@ export async function updateUsername(sessionId, user, username) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+    localStorage.setItem("username", username);
     session.set(data);
     return data;
   } catch (error) {

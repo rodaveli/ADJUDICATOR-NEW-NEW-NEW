@@ -50,14 +50,12 @@
                             "Both arguments submitted. Waiting for judgement...",
                         );
                     }
-                    // Update the session store with the new argument
                     session.update((s) => ({
                         ...s,
                         arguments: [...(s.arguments || []), data.argument],
                     }));
                 } else if (data.message === "Judgement ready") {
                     console.log("Received judgement:", data.judgement);
-                    // Update the session store with the new judgement
                     session.update((s) => ({
                         ...s,
                         judgement: data.judgement,
@@ -128,7 +126,9 @@
         event.preventDefault();
         try {
             const result = await submitArgument(id, newArgument, imageFile);
-            addMessage(`${currentUser} submitted an argument`);
+            addMessage(
+                `${$session[`${currentUser}_name`]} submitted an argument`,
+            );
             newArgument = "";
             imageFile = null;
             $session = { ...$session };
@@ -221,30 +221,30 @@
         <section>
             <h2>Judgement</h2>
             <div class="judgement">
-                <p>
-                    <strong>Winner:</strong>
-                    {$session.judgement.winner === "Argument 1"
-                        ? $session.user1_name
-                        : $session.user2_name}
-                </p>
-                <p>
-                    <strong>Winning Argument:</strong>
-                    {$session.judgement.winning_argument}
-                </p>
-                <p>
-                    <strong>Loser:</strong>
-                    {$session.judgement.loser === "Argument 1"
-                        ? $session.user1_name
-                        : $session.user2_name}
-                </p>
-                <p>
-                    <strong>Losing Argument:</strong>
-                    {$session.judgement.losing_argument}
-                </p>
-                <p>
-                    <strong>Reasoning:</strong>
-                    {$session.judgement.reasoning}
-                </p>
+                {#if $session.judgement.content.startsWith("An error occurred:")}
+                    <p class="error">Error: {$session.judgement.content}</p>
+                {:else}
+                    <p>
+                        <strong>Winner:</strong>
+                        {$session.judgement.winning_user_id}
+                    </p>
+                    <p>
+                        <strong>Winning Argument:</strong>
+                        {$session.judgement.winning_argument}
+                    </p>
+                    <p>
+                        <strong>Loser:</strong>
+                        {$session.judgement.losing_user_id}
+                    </p>
+                    <p>
+                        <strong>Losing Argument:</strong>
+                        {$session.judgement.losing_argument}
+                    </p>
+                    <p>
+                        <strong>Reasoning:</strong>
+                        {$session.judgement.reasoning}
+                    </p>
+                {/if}
             </div>
         </section>
 
