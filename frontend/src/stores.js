@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 
 export const session = writable(null);
-export const API_URL = "adjudicator-new-new-hqi4cz0mo-rodavelis-projects.vercel.app";
+export const API_URL = "https://adjudicator-new-new-lw6bmyyu8-rodavelis-projects.vercel.app";
 // export const API_URL = "http://localhost:8000";
 
 function getUserId() {
