@@ -20,8 +20,8 @@ class UsernameUpdate(BaseModel):
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
-#app = FastAPI(root_path="/api")
+#app = FastAPI()
+app = FastAPI(root_path="/api")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
