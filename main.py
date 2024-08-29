@@ -27,6 +27,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 origins = [
+    "https://*.vercel.app",
     "*.rodavelis-projects.vercel.app",  # Allow all subdomains
     "http://localhost:5173"  # Keep localhost for local development
 ]
