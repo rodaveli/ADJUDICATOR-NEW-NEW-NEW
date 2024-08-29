@@ -27,9 +27,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 origins = [
-    "https://adjudicator-new-new-8dqz6mpzx-rodavelis-projects.vercel.app", # replace with your frontend domain
-    "http://localhost:5173",
-     "https://adjudicator-new-new-lw6bmyyu8-rodavelis-projects.vercel.app" # Add this if you are also testing locally
+    "*.rodavelis-projects.vercel.app",  # Allow all subdomains
+    "http://localhost:5173"  # Keep localhost for local development
 ]
 
 # CORS middleware setup
