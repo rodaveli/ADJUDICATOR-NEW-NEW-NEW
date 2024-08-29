@@ -42,9 +42,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Received request: {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"Sent response: {response.status_code}")
+    return response
 
 @app.options("/{path:path}")
-async def options_handler(request: Request):
+async def options_handler(request: Request, response: Response):
+    response.headers["Access-Control-Allow-Origin"] = "https://adjudicator-new-new-mjub8knpx-rodavelis-projects.vercel.app"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return {}
 # Dependency
 def get_db():
