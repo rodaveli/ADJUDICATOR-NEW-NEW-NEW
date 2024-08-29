@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends, HTTPException, status, File, UploadFile, Form, Query, Body
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends, HTTPException, status, File, UploadFile, Form, Query, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -20,8 +20,8 @@ class UsernameUpdate(BaseModel):
 
 models.Base.metadata.create_all(bind=engine)
 
-#app = FastAPI()
-app = FastAPI(root_path="/api")
+app = FastAPI()
+#app = FastAPI(root_path="/api")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -36,12 +36,16 @@ origins = [
 # CORS middleware setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
+@app.options("/{path:path}")
+async def options_handler(request: Request):
+    return {}
 # Dependency
 def get_db():
     db = SessionLocal()
