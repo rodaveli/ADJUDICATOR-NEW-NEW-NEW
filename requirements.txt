@@ -10,3 +10,4 @@ bcrypt
 openai
 websockets
 psycopg2-binary
+psycopg2
