@@ -6,7 +6,7 @@ from schemas import Argument, Judgement, Appeal
 
 client = openai.OpenAI()
 # client.api_key = os.getenv("OPENAI_API_KEY")
-
+#test
 # if not client.api_key:
 #     raise ValueError("No OpenAI API key found. Please set the OPENAI_API_KEY environment variable.")
 
